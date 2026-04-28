@@ -1,0 +1,16 @@
+cc -o p5pipe p5pipe.c
+./p5pipe
+
+cc -o server p5server.c
+cc -o cliente p5cliente.c
+
+./server &
+ls -l /tmp
+./cliente
+
+cc -o server p5server-fila.c mesgs.c ; 
+cc -o cliente p5cliente-fila.c mesgs.c
+
+./server &
+ipcs -a
+./cliente

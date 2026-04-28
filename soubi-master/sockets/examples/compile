@@ -1,0 +1,7 @@
+cc -o client client.c
+cc -o client-io client-io.c ../socketio/socketio.c 
+cc -o server server.c
+cc -o server2 server2.c
+cc -o server3 server3.c
+cc -o server2-th server2-th.c ../socketio/socketio.c -lpthread
+

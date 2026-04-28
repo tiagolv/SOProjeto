@@ -1,0 +1,11 @@
+Description of these simple examples
+
+server.c  simple one use server
+server2.c  server with fork .. note that message is sent in bits just to show result of unsafe sends/recvs
+           also shows zombie problem
+server3.c  signal handling to solve zombie problem
+
+client.c - program uses unsafe recv
+client-io.c - program uses safe readn to recieve message
+
+server2-th.c  threaded server

@@ -1,0 +1,22 @@
+Para compilar :  make
+
+Executavel : s_pipe
+
+Para experimentar :
+inserir : nome do ficheiro
+output o conteudo deste ficheiro
+
+alunos:~/so/ipc/trunk/ipc crocker$ s_pipe
+Insira Nome do Ficheiro ->testfile
+Conteudo dum ficheiro de teste
+
+alunos:~/so/ipc/trunk/ipc crocker$ s_pipe
+Insira Nome do Ficheiro ->/etc/appletalk.cgf
+/etc/appletalk.cgf: can.t open, No such file or directory
+
+alunos:~/so/ipc/trunk/ipc crocker$ s_pipe
+Insira Nome do Ficheiro ->/etc/appletalk.cfg
+en0:*
+
+
+

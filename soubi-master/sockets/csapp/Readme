@@ -1,0 +1,38 @@
+Readme
+
+Utilizar um numero socket alto ! Mais do que 1024
+
+To compile
+
+make clean 
+make
+
+[rtems@localhost csapp]$ make
+cc -Wall -o echo-cli echo-cli.c ../socketio/socketio.o
+cc -Wall -o echo-ser echo-ser.c ../socketio/socketio.o
+
+To run on local machine
+
+./echo-ser 1500
+./echo-cli localhost 1500
+
+To get ipaddresses
+
+Linux 	/sbin/ifconfid
+Windows ipconfig
+
+
+My Notes on server Code
+
+/* determine the domain name and IP address of the client */
+/* the code below is unsafe 
+	gethostbyname is obsolete and returns NULL on fedora10 sala619 should use getnameinfo
+*/
+//struct hostent *hp;
+//hp = gethostbyaddr(ls(const void *)&(clientaddr.sin_addr.s_addr), sizeof(clientaddr.sin_addr.s_addr), AF_INET);
+//if (hp==NULL){
+//	fprintf(stderr,"gethostbyname error\n"); exit(-1);
+//}
+//haddrp = inet_ntoa(clientaddr.sin_addr);
+//printf("server connected to %s (%s)\n", hp->h_name, haddrp);
+	
