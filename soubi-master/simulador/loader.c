@@ -82,18 +82,22 @@ int loader_read_plan(const char *filename)
     char nome[MAX_NAME];
     int arrival = 0;
     int priority = 0;
+    int period = 0;
+    int deadline = 0;
     int fields;
 
     if (line[0] == '#' || line[0] == '\n')
       continue;
 
-    fields = sscanf(line, " %15s %d %d", nome, &arrival, &priority);
+    fields = sscanf(line, " %15s %d %d %d %d", nome, &arrival, &priority, &period, &deadline);
     if (fields >= 2 && count < MAX_PLAN)
     {
       strncpy(plan_list[count].nome, nome, MAX_NAME - 1);
       plan_list[count].nome[MAX_NAME - 1] = '\0';
-      plan_list[count].arrival = arrival;
-      plan_list[count].priority = (fields == 3) ? priority : 0;
+      plan_list[count].arrival  = arrival;
+      plan_list[count].priority = (fields >= 3) ? priority : 0;
+      plan_list[count].period   = (fields >= 4) ? period   : 0;
+      plan_list[count].deadline = (fields >= 5) ? deadline : 0;
       count++;
     }
   }

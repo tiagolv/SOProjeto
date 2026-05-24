@@ -71,6 +71,8 @@ typedef struct
   char nome[MAX_NAME];
   int arrival;
   int priority;
+  int period;
+  int deadline;
 } plan_entry;
 
 extern instruction memory[MAX_MEMORY];

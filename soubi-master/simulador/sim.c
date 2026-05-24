@@ -54,7 +54,12 @@ void sim_check_arrivals(void)
 {
   while (plan_index < plan_count && plan_list[plan_index].arrival <= tempo)
   {
-    process_create(plan_list[plan_index].nome, 0, plan_list[plan_index].priority);
+    int idx = process_create(plan_list[plan_index].nome, 0, plan_list[plan_index].priority);
+    if (idx >= 0)
+    {
+      pcb_table[idx].period   = plan_list[plan_index].period;
+      pcb_table[idx].deadline = plan_list[plan_index].deadline;
+    }
     plan_index++;
   }
 }
@@ -74,37 +79,70 @@ void sim_interrupt_running(void)
   running = -1;
 }
 
+static int plan_cmp(const void *a, const void *b)
+{
+  return ((plan_entry *)a)->arrival - ((plan_entry *)b)->arrival;
+}
+
+static void dispatch(char cmd)
+{
+  if (cmd == 'E')      exec_quantum();
+  else if (cmd == 'I') sim_interrupt_running();
+  else if (cmd == 'D') scheduler_long();
+  else if (cmd == 'R') report_state();
+}
+
 void sim_run(const char *plan_file, const char *control_file)
 {
   int i;
+  int use_stdin;
 
   if (loader_read_plan(plan_file) < 0)
   {
-    printf("Nao foi possivel ler plan.txt\n");
+    printf("Nao foi possivel ler %s\n", plan_file);
     return;
   }
-  if (loader_read_control(control_file) < 0)
-  {
-    printf("Nao foi possivel ler control.txt\n");
-    return;
-  }
+
+  /* guarantee arrivals are processed in order regardless of plan.txt order */
+  qsort(plan_list, plan_count, sizeof(plan_entry), plan_cmp);
 
   sim_check_arrivals();
 
-  for (i = 0; i < control_count; i++)
-  {
-    char cmd = control_cmds[i];
+  /* use stdin if no control file, "-" is given, or the file cannot be opened */
+  use_stdin = (control_file == NULL ||
+               strcmp(control_file, "-") == 0 ||
+               loader_read_control(control_file) < 0);
 
-    if (cmd == 'E')
-      exec_quantum();
-    else if (cmd == 'I')
-      sim_interrupt_running();
-    else if (cmd == 'D')
-      scheduler_long();
-    else if (cmd == 'R')
-      report_state();
-    else if (cmd == 'T')
-      break;
+  if (use_stdin)
+  {
+    char line[32];
+    char cmd;
+    printf("Modo interativo. Comandos: E I D R T\n");
+    printf("> ");
+    fflush(stdout);
+    while (fgets(line, sizeof(line), stdin) != NULL)
+    {
+      if (sscanf(line, " %c", &cmd) != 1)
+      {
+        printf("> ");
+        fflush(stdout);
+        continue;
+      }
+      if (cmd == 'T')
+        break;
+      dispatch(cmd);
+      printf("> ");
+      fflush(stdout);
+    }
+  }
+  else
+  {
+    for (i = 0; i < control_count; i++)
+    {
+      if (control_cmds[i] == 'T')
+        break;
+      dispatch(control_cmds[i]);
+    }
   }
 
   report_global();
